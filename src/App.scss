@@ -32,7 +32,23 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
+  }
+}
+
+.app-container {
+  .header-container {
+    nav {
+      background: aliceblue;
+
+      .nav-link {
+        &.active {
+          color: rgb(40, 43, 245);
+          font-weight: 600;
+        }
+      }
+    }
   }
 }
