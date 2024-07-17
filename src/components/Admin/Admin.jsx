@@ -9,12 +9,12 @@ const Admin = () => {
         <>
             <div className="admin-container">
                 <Row>
-                    <Col md={3}>
+                    <Col md={2}>
                         <div className='admin-sidebar'>
                             <SideBar />
                         </div>
                     </Col>
-                    <Col md={9}>
+                    <Col md={10}>
                         <div className='admin-content'>
                             <Outlet />
                         </div>

@@ -6,18 +6,19 @@ import Row from 'react-bootstrap/Row';
 import Image from 'react-bootstrap/Image';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import { postCreateUser } from '../../../services/apiService'
+import { putUpdateUser } from '../../../services/apiService'
+import _ from 'lodash';
 
-const ModalCreateUser = ({
+const ModalUpdateUser = ({
     show,
     setShow,
-    fetchUserList
+    fetchUserList,
+    userUpdateData
 }) => {
     const [fullName, setFullName] = useState('');
     const [email, setEmail] = useState('');
     const [phone, setPhone] = useState('');
     const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
     const [role, setRole] = useState(1);
     const [avatar, setAvatar] = useState();
 
@@ -27,6 +28,16 @@ const ModalCreateUser = ({
         }
     }, [avatar])
 
+    useEffect(() => {
+        if (!_.isEmpty(userUpdateData)) {
+            setFullName(userUpdateData.fullName);
+            setEmail(userUpdateData.email);
+            setPhone(userUpdateData.phone);
+            setUsername(userUpdateData.username);
+            setRole(userUpdateData.role);
+        }
+    }, [userUpdateData])
+
     const handlePreviewAvatar = (e) => {
         const file = e.target.files[0];
         file.preview = URL.createObjectURL(file)
@@ -35,7 +46,7 @@ const ModalCreateUser = ({
 
     const handleClose = () => {
         setShow(false);
-        resetCreateUserModal();
+        resetUpdateUserModal();
     }
 
     const validateEmail = (input) => {
@@ -44,7 +55,7 @@ const ModalCreateUser = ({
         );
     };
 
-    const handleSubmitCreateUser = async () => {
+    const handleSubmitUpdateUser = async () => {
         // validate 
         if (!validateEmail(email)) {
             toast.error("Invalid email!");
@@ -52,7 +63,7 @@ const ModalCreateUser = ({
         }
 
         // call api
-        let res = await postCreateUser(fullName, email, phone, username, password, role, avatar);
+        let res = await putUpdateUser(fullName, email, phone, username, role, avatar);
 
         if (res && res.status === 1) {
             toast.success(res.message);
@@ -64,12 +75,11 @@ const ModalCreateUser = ({
         }
     }
 
-    const resetCreateUserModal = () => {
+    const resetUpdateUserModal = () => {
         setFullName('');
         setEmail('');
         setPhone('');
         setUsername('');
-        setPassword('');
         setRole(1);
         setAvatar();
     }
@@ -82,7 +92,7 @@ const ModalCreateUser = ({
             size="lg"
         >
             <Modal.Header closeButton>
-                <Modal.Title>Add new user</Modal.Title>
+                <Modal.Title>Update user</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 <Form>
@@ -134,18 +144,6 @@ const ModalCreateUser = ({
                             />
                         </Col>
                     </Form.Group>
-                    <Form.Group as={Row} className="mb-3" controlId="password">
-                        <Form.Label column sm="2">
-                            Password
-                        </Form.Label>
-                        <Col sm="10">
-                            <Form.Control
-                                type="password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                            />
-                        </Col>
-                    </Form.Group>
                     <Form.Group as={Row} className="mb-3" controlId="role">
                         <Form.Label column sm="2">
                             Role
@@ -177,7 +175,7 @@ const ModalCreateUser = ({
                 <Button variant="secondary" onClick={handleClose}>
                     Close
                 </Button>
-                <Button variant="primary" onClick={handleSubmitCreateUser}>
+                <Button variant="primary" onClick={handleSubmitUpdateUser}>
                     Save
                 </Button>
             </Modal.Footer>
@@ -185,4 +183,4 @@ const ModalCreateUser = ({
     )
 }
 
-export default ModalCreateUser
+export default ModalUpdateUser
