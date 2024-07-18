@@ -4,6 +4,10 @@ const getUserList = async () => {
     return await axios.get('api/users/all');
 }
 
+const getPaginatedUserList = async (page, limit) => {
+    return await axios.get(`api/users/paginated-list?page=${page}&limit=${limit}`);
+}
+
 const getUserInfo = async (id) => {
     return await axios.get(`api/users/detail/${id}`);
 }
@@ -41,6 +45,7 @@ const deleteUser = async (id) => {
 
 export {
     getUserList,
+    getPaginatedUserList,
     getUserInfo,
     postCreateUser,
     putUpdateUser,
