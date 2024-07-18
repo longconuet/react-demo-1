@@ -8,45 +8,53 @@ import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { putUpdateUser } from '../../../services/apiService'
 import _ from 'lodash';
+import { getApiImagePath } from '../../../utils/imageHelper';
 
 const ModalUpdateUser = ({
     show,
     setShow,
     fetchUserList,
-    userUpdateData
+    userUpdateData,
+    handleSetUserUpdateData
 }) => {
+    const [userId, setUserId] = useState('');
     const [fullName, setFullName] = useState('');
     const [email, setEmail] = useState('');
     const [phone, setPhone] = useState('');
     const [username, setUsername] = useState('');
     const [role, setRole] = useState(1);
     const [avatar, setAvatar] = useState();
+    const [avatarPreview, setAvatarPreview] = useState();
 
     useEffect(() => {
         return () => {
-            avatar && URL.revokeObjectURL(avatar.preview);
+            avatar && URL.revokeObjectURL(setAvatarPreview);
         }
     }, [avatar])
 
     useEffect(() => {
         if (!_.isEmpty(userUpdateData)) {
+            setUserId(userUpdateData.id);
             setFullName(userUpdateData.fullName);
             setEmail(userUpdateData.email);
             setPhone(userUpdateData.phone);
             setUsername(userUpdateData.username);
             setRole(userUpdateData.role);
+            setAvatarPreview(getApiImagePath(userUpdateData.avatar, false))
         }
     }, [userUpdateData])
 
     const handlePreviewAvatar = (e) => {
         const file = e.target.files[0];
-        file.preview = URL.createObjectURL(file)
+        const preview = URL.createObjectURL(file)
         setAvatar(file);
+        setAvatarPreview(preview);
     }
 
     const handleClose = () => {
         setShow(false);
         resetUpdateUserModal();
+        handleSetUserUpdateData({});
     }
 
     const validateEmail = (input) => {
@@ -57,13 +65,29 @@ const ModalUpdateUser = ({
 
     const handleSubmitUpdateUser = async () => {
         // validate 
+        if (_.isEmpty(fullName)) {
+            toast.error("Please enter Full name!");
+            return;
+        }
+        if (_.isEmpty(email)) {
+            toast.error("Please enter Email!");
+            return;
+        }
         if (!validateEmail(email)) {
             toast.error("Invalid email!");
             return;
         }
+        if (_.isEmpty(phone)) {
+            toast.error("Please enter Phone!");
+            return;
+        }
+        if (_.isEmpty(username)) {
+            toast.error("Please enter Username!");
+            return;
+        }
 
         // call api
-        let res = await putUpdateUser(fullName, email, phone, username, role, avatar);
+        let res = await putUpdateUser(userId, fullName, email, phone, username, role, avatar, avatarPreview);
 
         if (res && res.status === 1) {
             toast.success(res.message);
@@ -82,6 +106,7 @@ const ModalUpdateUser = ({
         setUsername('');
         setRole(1);
         setAvatar();
+        setAvatarPreview();
     }
 
     return (
@@ -165,7 +190,7 @@ const ModalUpdateUser = ({
                         <Col sm="10">
                             <Form.Control type="file" onChange={handlePreviewAvatar} />
                             <div>
-                                {avatar && avatar.preview && <Image src={avatar.preview} rounded className='preview-avatar mt-2' />}
+                                {avatarPreview && <Image src={avatarPreview} rounded className='preview-avatar mt-2' />}
                             </div>
                         </Col>
                     </Form.Group>

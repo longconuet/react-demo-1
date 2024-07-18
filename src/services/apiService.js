@@ -4,6 +4,10 @@ const getUserList = async () => {
     return await axios.get('api/users/all');
 }
 
+const getUserInfo = async (id) => {
+    return await axios.get(`api/users/detail/${id}`);
+}
+
 const postCreateUser = async (fullName, email, phone, username, password, role, avatar) => {
     const data = new FormData();
     data.append('fullName', fullName);
@@ -17,7 +21,7 @@ const postCreateUser = async (fullName, email, phone, username, password, role, 
     return await axios.post('api/users/store', data);
 }
 
-const putUpdateUser = async (id, fullName, email, phone, username, role, avatar) => {
+const putUpdateUser = async (id, fullName, email, phone, username, role, avatar, avatarPreview) => {
     const data = new FormData();
     data.append('id', id);
     data.append('fullName', fullName);
@@ -26,8 +30,19 @@ const putUpdateUser = async (id, fullName, email, phone, username, role, avatar)
     data.append('username', username);
     data.append('role', +role);
     data.append('avatar', avatar);
+    data.append('avatarPath', avatarPreview);
 
-    return await axios.post('api/users/update', data);
+    return await axios.put('api/users/update', data);
 }
 
-export { getUserList, postCreateUser, putUpdateUser }
+const deleteUser = async (id) => {
+    return await axios.delete(`api/users/delete/${id}`);
+}
+
+export {
+    getUserList,
+    getUserInfo,
+    postCreateUser,
+    putUpdateUser,
+    deleteUser
+}

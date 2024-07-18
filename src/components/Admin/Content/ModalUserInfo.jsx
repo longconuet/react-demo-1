@@ -5,96 +5,45 @@ import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
 import Image from 'react-bootstrap/Image';
 import { useEffect, useState } from 'react';
-import { toast } from 'react-toastify';
-import { postCreateUser } from '../../../services/apiService';
 import _ from 'lodash';
+import { getApiImagePath } from '../../../utils/imageHelper';
 
-const ModalCreateUser = ({
+const ModalUserInfo = ({
     show,
     setShow,
-    fetchUserList
+    userInfoData,
+    handleSetUserInfoData
 }) => {
     const [fullName, setFullName] = useState('');
     const [email, setEmail] = useState('');
     const [phone, setPhone] = useState('');
     const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
     const [role, setRole] = useState(1);
-    const [avatar, setAvatar] = useState();
     const [avatarPreview, setAvatarPreview] = useState();
 
     useEffect(() => {
-        return () => {
-            avatar && URL.revokeObjectURL(avatarPreview);
+        if (!_.isEmpty(userInfoData)) {
+            setFullName(userInfoData.fullName);
+            setEmail(userInfoData.email);
+            setPhone(userInfoData.phone);
+            setUsername(userInfoData.username);
+            setRole(userInfoData.role);
+            setAvatarPreview(getApiImagePath(userInfoData.avatar, true))
         }
-    }, [avatar, avatarPreview])
-
-    const handlePreviewAvatar = (e) => {
-        const file = e.target.files[0];
-        const preview = URL.createObjectURL(file)
-        setAvatar(file);
-        setAvatarPreview(preview);
-    }
+    }, [userInfoData])
 
     const handleClose = () => {
         setShow(false);
-        resetCreateUserModal();
+        resetUserInfoModal();
+        handleSetUserInfoData({});
     }
 
-    const validateEmail = (input) => {
-        return input.match(
-            /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-        );
-    };
-
-    const handleSubmitCreateUser = async () => {
-        // validate 
-        if (_.isEmpty(fullName)) {
-            toast.error("Please enter Full name!");
-            return;
-        }
-        if (_.isEmpty(email)) {
-            toast.error("Please enter Email!");
-            return;
-        }
-        if (!validateEmail(email)) {
-            toast.error("Invalid email!");
-            return;
-        }
-        if (_.isEmpty(phone)) {
-            toast.error("Please enter Phone!");
-            return;
-        }
-        if (_.isEmpty(username)) {
-            toast.error("Please enter Username!");
-            return;
-        }
-        if (_.isEmpty(password)) {
-            toast.error("Please enter Password!");
-            return;
-        }
-
-        // call api
-        let res = await postCreateUser(fullName, email, phone, username, password, role, avatar);
-
-        if (res && res.status === 1) {
-            toast.success(res.message);
-            fetchUserList();
-            handleClose();
-        }
-        else {
-            toast.error(res.message);
-        }
-    }
-
-    const resetCreateUserModal = () => {
+    const resetUserInfoModal = () => {
         setFullName('');
         setEmail('');
         setPhone('');
         setUsername('');
-        setPassword('');
         setRole(1);
-        setAvatar();
         setAvatarPreview();
     }
 
@@ -106,7 +55,7 @@ const ModalCreateUser = ({
             size="lg"
         >
             <Modal.Header closeButton>
-                <Modal.Title>Add new user</Modal.Title>
+                <Modal.Title>User Info</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 <Form>
@@ -118,7 +67,7 @@ const ModalCreateUser = ({
                             <Form.Control
                                 type='text'
                                 value={fullName}
-                                onChange={(e) => setFullName(e.target.value)}
+                                disabled
                             />
                         </Col>
                     </Form.Group>
@@ -130,7 +79,7 @@ const ModalCreateUser = ({
                             <Form.Control
                                 type='text'
                                 value={email}
-                                onChange={(e) => setEmail(e.target.value)}
+                                disabled
                             />
                         </Col>
                     </Form.Group>
@@ -142,7 +91,7 @@ const ModalCreateUser = ({
                             <Form.Control
                                 type='text'
                                 value={phone}
-                                onChange={(e) => setPhone(e.target.value)}
+                                disabled
                             />
                         </Col>
                     </Form.Group>
@@ -154,19 +103,7 @@ const ModalCreateUser = ({
                             <Form.Control
                                 type='text'
                                 value={username}
-                                onChange={(e) => setUsername(e.target.value)}
-                            />
-                        </Col>
-                    </Form.Group>
-                    <Form.Group as={Row} className="mb-3" controlId="password">
-                        <Form.Label column sm="2">
-                            Password
-                        </Form.Label>
-                        <Col sm="10">
-                            <Form.Control
-                                type="password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
+                                disabled
                             />
                         </Col>
                     </Form.Group>
@@ -175,13 +112,11 @@ const ModalCreateUser = ({
                             Role
                         </Form.Label>
                         <Col sm="10">
-                            <Form.Select
-                                value={role}
-                                onChange={(e) => setRole(e.target.value)}
-                            >
-                                <option value="1">USER</option>
-                                <option value="0">ADMIN</option>
-                            </Form.Select>
+                            <Form.Control
+                                type='text'
+                                value={role === 1 ? "USER" : "ADMIN"}
+                                disabled
+                            />
                         </Col>
                     </Form.Group>
                     <Form.Group as={Row} className="mb-3" controlId="avatar">
@@ -189,9 +124,8 @@ const ModalCreateUser = ({
                             Avatar
                         </Form.Label>
                         <Col sm="10">
-                            <Form.Control type="file" onChange={handlePreviewAvatar} />
                             <div>
-                                {avatar && avatarPreview && <Image src={avatarPreview} rounded className='preview-avatar mt-2' />}
+                                {avatarPreview && <Image src={avatarPreview} rounded className='preview-avatar mt-2' />}
                             </div>
                         </Col>
                     </Form.Group>
@@ -201,12 +135,9 @@ const ModalCreateUser = ({
                 <Button variant="secondary" onClick={handleClose}>
                     Close
                 </Button>
-                <Button variant="primary" onClick={handleSubmitCreateUser}>
-                    Save
-                </Button>
             </Modal.Footer>
         </Modal>
     )
 }
 
-export default ModalCreateUser
+export default ModalUserInfo

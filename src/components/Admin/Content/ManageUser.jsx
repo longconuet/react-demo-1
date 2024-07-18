@@ -3,6 +3,8 @@ import { FaPlus } from "react-icons/fa6";
 import { useState, useEffect } from 'react';
 import ModalCreateUser from './ModalCreateUser';
 import ModalUpdateUser from './ModalUpdateUser';
+import ModalUserInfo from './ModalUserInfo';
+import ModalDeleteUser from './ModalDeleteUser';
 import UserTable from './UserTable';
 import { getUserList } from '../../../services/apiService';
 import { toast } from 'react-toastify';
@@ -11,15 +13,39 @@ const ManageUser = () => {
     const [userList, setUserList] = useState([]);
     const [showCreateUserModal, setShowCreateUserModal] = useState(false);
     const [showUpdateUserModal, setShowUpdateUserModal] = useState(false);
+    const [showUserInfoModal, setShowUserInfoModal] = useState(false);
+    const [showDeleteUserModal, setShowDeleteUserModal] = useState(false);
     const [userUpdateData, setUserUpdateData] = useState();
+    const [userInfoData, setUserInfoData] = useState();
+    const [userDeleteData, setUserDeleteData] = useState();
 
+    // create
     const handleShowCreateUserModal = () => setShowCreateUserModal(true);
     const handleShowHideCreateUserModal = (value) => setShowCreateUserModal(value);
+
+    //update
     const handleShowUpdateUserModal = (user) => {
         setUserUpdateData(user);
         setShowUpdateUserModal(true);
     };
+    const handleSetUserUpdateData = (user) => setUserUpdateData(user);
     const handleShowHideUpdateUserModal = (value) => setShowUpdateUserModal(value);
+
+    // info
+    const handleShowUserInfoModal = (user) => {
+        setUserInfoData(user);
+        setShowUserInfoModal(true);
+    };
+    const handleSetUserInfoData = (user) => setUserInfoData(user);
+    const handleShowHideUserInfoModal = (value) => setShowUserInfoModal(value);
+
+    // delete
+    const handleShowDeleteUserModal = (user) => {
+        setUserDeleteData(user);
+        setShowDeleteUserModal(true);
+    };
+    const handleSetUserDeleteData = (user) => setUserDeleteData(user);
+    const handleShowHideDeleteUserModal = (value) => setShowDeleteUserModal(value);
 
     const fetchUserList = async () => {
         let res = await getUserList();
@@ -54,6 +80,8 @@ const ManageUser = () => {
                     {<UserTable
                         userList={userList}
                         handleShowUpdateUserModal={handleShowUpdateUserModal}
+                        handleShowUserInfoModal={handleShowUserInfoModal}
+                        handleShowDeleteUserModal={handleShowDeleteUserModal}
                     />}
                 </div>
             </div>
@@ -69,6 +97,22 @@ const ManageUser = () => {
                 setShow={handleShowHideUpdateUserModal}
                 fetchUserList={fetchUserList}
                 userUpdateData={userUpdateData}
+                handleSetUserUpdateData={handleSetUserUpdateData}
+            />
+
+            <ModalUserInfo
+                show={showUserInfoModal}
+                setShow={handleShowHideUserInfoModal}
+                userInfoData={userInfoData}
+                handleSetUserInfoData={handleSetUserInfoData}
+            />
+
+            <ModalDeleteUser
+                show={showDeleteUserModal}
+                setShow={handleShowHideDeleteUserModal}
+                fetchUserList={fetchUserList}
+                userDeleteData={userDeleteData}
+                handleSetUserDeleteData={handleSetUserDeleteData}
             />
         </div>
     )

@@ -5,7 +5,12 @@ import Button from 'react-bootstrap/Button';
 import Badge from 'react-bootstrap/Badge';
 import Stack from 'react-bootstrap/Stack';
 
-const UserTable = ({ userList, handleShowUpdateUserModal }) => {
+const UserTable = ({
+    userList,
+    handleShowUpdateUserModal,
+    handleShowUserInfoModal,
+    handleShowDeleteUserModal
+}) => {
     const getRoleBadge = (role) => {
         let roleBadge = '';
         switch (role) {
@@ -53,9 +58,9 @@ const UserTable = ({ userList, handleShowUpdateUserModal }) => {
                                     <td>{getRoleBadge(user.role)}</td>
                                     <td>
                                         <Stack direction="horizontal" gap={2}>
-                                            <Button variant="info">View</Button>
+                                            <Button variant="info" onClick={() => handleShowUserInfoModal(user)}>View</Button>
                                             <Button variant="warning" onClick={() => handleShowUpdateUserModal(user)}>Edit</Button>
-                                            <Button variant="danger">Delete</Button>
+                                            <Button variant="danger" onClick={() => handleShowDeleteUserModal(user)}>Delete</Button>
                                         </Stack>
                                     </td>
                                 </tr>
