@@ -43,11 +43,16 @@ const deleteUser = async (id) => {
     return await axios.delete(`api/users/delete/${id}`);
 }
 
+const postLogin = async (username, password) => {
+    return await axios.post('api/auth/login', { username, password });
+}
+
 export {
     getUserList,
     getPaginatedUserList,
     getUserInfo,
     postCreateUser,
     putUpdateUser,
-    deleteUser
+    deleteUser,
+    postLogin
 }
