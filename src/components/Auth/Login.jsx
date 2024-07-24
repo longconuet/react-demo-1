@@ -9,11 +9,14 @@ import { useNavigate } from 'react-router-dom';
 import { postLogin } from '../../services/apiService';
 import _ from 'lodash';
 import { toast } from 'react-toastify';
+import { useDispatch } from 'react-redux';
+import { setToken } from '../../redux/actions/authAction';
 
 const Login = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     const handleLogin = async () => {
         // validate
@@ -30,7 +33,8 @@ const Login = () => {
         let res = await postLogin(username, password);
         if (res && res.status === 1) {
             toast.success(res.message);
-            navigate('/')
+            dispatch(setToken(res.data));
+            navigate('/');
         }
         else {
             toast.error(res ? res.message : "Something went wrong!");
