@@ -5,7 +5,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { postLogin } from '../../services/apiService';
 import _ from 'lodash';
 import { toast } from 'react-toastify';
@@ -17,6 +17,7 @@ const Login = () => {
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    const location = useLocation();
 
     const handleLogin = async () => {
         // validate
@@ -34,7 +35,10 @@ const Login = () => {
         if (res && res.status === 1) {
             toast.success(res.message);
             dispatch(setToken(res.data));
-            navigate('/');
+
+            // Redirect to the page they were trying to access, or to dashboard
+            const from = location.state?.from?.pathname || "/";
+            navigate(from, { replace: true });
         }
         else {
             toast.error(res ? res.message : "Something went wrong!");

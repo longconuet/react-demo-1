@@ -10,18 +10,27 @@ import ManageUser from './components/Admin/Content/ManageUser';
 import Login from './components/Auth/Login';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import ProtectedSingleRoute from './ProtectedSingleRoute';
+import ProtectedNestedRoute from './ProtectedNestedRoute';
 
 const Layout = () => {
     return (
         <>
+            {/* <AuthRedirect /> */}
             <Routes>
                 <Route path='/' element={<App />} >
                     <Route index element={<Home />} />
-                    <Route path='/user' element={<User />} />
+                    <Route path='/user' element={
+                        <ProtectedSingleRoute>
+                            <User />
+                        </ProtectedSingleRoute>
+                    } />
                 </Route>
 
-                <Route path='/admin' element={<Admin />}>
-                    <Route path='manage-user' element={<ManageUser />} />
+                <Route element={<ProtectedNestedRoute />}>
+                    <Route path='/admin' element={<Admin />}>
+                        <Route path='manage-user' element={<ManageUser />} />
+                    </Route>
                 </Route>
 
                 <Route path='/login' element={<Login />} />

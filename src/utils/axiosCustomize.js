@@ -1,6 +1,8 @@
 import axios from 'axios';
 import NProgress from 'nprogress';
 import { toast } from 'react-toastify';
+import { store } from '../redux/store';
+import { logout } from '../redux/actions/authAction';
 
 NProgress.configure({
     showSpinner: false,
@@ -11,13 +13,16 @@ NProgress.configure({
 const instance = axios.create({
     baseURL: 'https://localhost:7104/',
     timeout: 5000,
-    // headers: { 'X-Custom-Header': 'foobar' }
 });
 
 // Add a request interceptor
 instance.interceptors.request.use(function (config) {
     // Do something before request is sent
     NProgress.start();
+
+    // add access token
+    const accessToken = store?.getState()?.auth?.account?.accessToken;
+    config.headers['Authorization'] = `Bearer ${accessToken}`;
 
     return config;
 }, function (error) {
@@ -39,12 +44,12 @@ instance.interceptors.response.use(function (response) {
     // Do something with response error
     NProgress.done();
 
-    console.log(error);
     if (error.response && error.response.status === 401) {
         // Handle 401 Unauthorized error
+        // Dispatch logout action
+        store.dispatch(logout());
         toast.error('Unauthorized access. Please login!');
-        // Redirect to login page or show login modal
-        // navigate('/login');
+        return Promise.reject(error);
     }
 
     return error && error.response && error.response.data

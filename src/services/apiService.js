@@ -47,6 +47,10 @@ const postLogin = async (username, password) => {
     return await axios.post('api/auth/login', { username, password });
 }
 
+const postLogout = async (accessToken, refreshToken) => {
+    return await axios.post('api/auth/logout', { accessToken, refreshToken });
+}
+
 export {
     getUserList,
     getPaginatedUserList,
@@ -54,5 +58,6 @@ export {
     postCreateUser,
     putUpdateUser,
     deleteUser,
-    postLogin
+    postLogin,
+    postLogout
 }
