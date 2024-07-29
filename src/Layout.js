@@ -12,6 +12,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ProtectedSingleRoute from './ProtectedSingleRoute';
 import ProtectedNestedRoute from './ProtectedNestedRoute';
+import AccessForbiden from './components/Auth/AccessForbiden';
 
 const Layout = () => {
     return (
@@ -34,6 +35,7 @@ const Layout = () => {
                 </Route>
 
                 <Route path='/login' element={<Login />} />
+                <Route path='/access-forbiden' element={<AccessForbiden />} />
             </Routes>
 
             <ToastContainer
