@@ -1,7 +1,5 @@
 import Container from 'react-bootstrap/Container';
-import Nav from 'react-bootstrap/Nav';
-import Navbar from 'react-bootstrap/Navbar';
-import NavDropdown from 'react-bootstrap/NavDropdown';
+import { Nav, Navbar, NavDropdown, Button } from 'react-bootstrap';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from "react-redux";
 import { logout } from '../../redux/actions/authAction';
@@ -43,34 +41,23 @@ const Header = () => {
                 <Navbar.Collapse id="basic-navbar-nav">
                     <Nav className="me-auto">
                         <NavLink className='nav-link' to='/'>Home</NavLink>
-                        <NavLink className='nav-link' to='/user'>Users</NavLink>
-                        <NavLink className='nav-link' to='/admin'>Admin</NavLink>
+                        {
+                            isAuthenticated === true && authAccount && authAccount.role === 0 &&
+                            <NavLink className='nav-link' to='/admin'>Manager</NavLink>
+                        }
                     </Nav>
-                    <NavDropdown title="Dropdown" id="basic-nav-dropdown">
+                    <Nav>
+                        {
+                            isAuthenticated === false &&
+                            <Button variant="outline-info" onClick={(e) => { handleLogin(e) }}>Login</Button>
+                        }
                         {
                             isAuthenticated === true &&
                             <>
-                                <NavDropdown.Item href="#action/3.3">Profile</NavDropdown.Item>
-                                <NavDropdown.Item
-                                    href="#!"
-                                    onClick={(e) => { handleLogout(e) }}
-                                >
-                                    Logout
-                                </NavDropdown.Item>
+                                <span className='mt-2 me-4'>Hello <strong>{authAccount && authAccount.fullName}</strong></span>
+                                <Button variant="outline-secondary" onClick={(e) => { handleLogout(e) }}>Logout</Button>
                             </>
                         }
-                        {
-                            isAuthenticated === false &&
-                            <NavDropdown.Item
-                                href="#!"
-                                onClick={(e) => { handleLogin(e) }}
-                            >
-                                Login
-                            </NavDropdown.Item>
-                        }
-                    </NavDropdown>
-                    <Nav>
-
                     </Nav>
                 </Navbar.Collapse>
             </Container>

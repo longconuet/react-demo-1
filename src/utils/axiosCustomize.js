@@ -11,8 +11,8 @@ NProgress.configure({
 
 
 const instance = axios.create({
-    baseURL: 'https://localhost:7104/',
-    timeout: 5000,
+    baseURL: process.env.REACT_APP_API_BASE_URL,
+    timeout: process.env.REACT_APP_API_TIME_OUT
 });
 
 // Add a request interceptor
@@ -32,20 +32,20 @@ instance.interceptors.request.use(function (config) {
     return Promise.reject(error);
 });
 
-let isRefreshing = false;
-let failedQueue = [];
+// let isRefreshing = false;
+// let failedQueue = [];
 
-const processQueue = (error, token = null) => {
-    failedQueue.forEach(prom => {
-        if (error) {
-            prom.reject(error);
-        } else {
-            prom.resolve(token);
-        }
-    });
+// const processQueue = (error, token = null) => {
+//     failedQueue.forEach(prom => {
+//         if (error) {
+//             prom.reject(error);
+//         } else {
+//             prom.resolve(token);
+//         }
+//     });
 
-    failedQueue = [];
-};
+//     failedQueue = [];
+// };
 
 // Add a response interceptor
 instance.interceptors.response.use(function (response) {

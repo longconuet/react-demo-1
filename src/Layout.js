@@ -13,24 +13,25 @@ import 'react-toastify/dist/ReactToastify.css';
 import ProtectedSingleRoute from './ProtectedSingleRoute';
 import ProtectedNestedRoute from './ProtectedNestedRoute';
 import AccessForbiden from './components/Auth/AccessForbiden';
+import ManageQuestion from './components/Admin/Content/ManageQuestion';
+import ManageQuiz from './components/Admin/Content/ManageQuiz';
+import { useSelector } from 'react-redux';
 
 const Layout = () => {
+    const authAccount = useSelector(state => state.auth.account);
+
     return (
         <>
             {/* <AuthRedirect /> */}
             <Routes>
                 <Route path='/' element={<App />} >
                     <Route index element={<Home />} />
-                    <Route path='/user' element={
-                        <ProtectedSingleRoute>
-                            <User />
-                        </ProtectedSingleRoute>
-                    } />
-                </Route>
-
-                <Route element={<ProtectedNestedRoute />}>
-                    <Route path='/admin' element={<Admin />}>
-                        <Route path='manage-user' element={<ManageUser />} />
+                    <Route element={<ProtectedNestedRoute />}>
+                        <Route path='/admin' element={authAccount && authAccount.role === 0 && <Admin />}>
+                            <Route path='manage-user' element={<ManageUser />} />
+                            <Route path='manage-question' element={<ManageQuestion />} />
+                            <Route path='manage-quiz' element={<ManageQuiz />} />
+                        </Route>
                     </Route>
                 </Route>
 
