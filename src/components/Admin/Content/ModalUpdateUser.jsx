@@ -28,9 +28,9 @@ const ModalUpdateUser = ({
 
     useEffect(() => {
         return () => {
-            avatar && URL.revokeObjectURL(setAvatarPreview);
+            avatar && URL.revokeObjectURL(avatarPreview);
         }
-    }, [avatar])
+    }, [avatar, avatarPreview])
 
     useEffect(() => {
         if (!_.isEmpty(userUpdateData)) {

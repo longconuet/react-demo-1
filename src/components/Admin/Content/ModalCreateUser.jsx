@@ -4,7 +4,7 @@ import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
 import Image from 'react-bootstrap/Image';
-import { useEffect, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { postCreateUser } from '../../../services/apiService';
 import _ from 'lodash';
@@ -209,4 +209,4 @@ const ModalCreateUser = ({
     )
 }
 
-export default ModalCreateUser
+export default memo(ModalCreateUser)

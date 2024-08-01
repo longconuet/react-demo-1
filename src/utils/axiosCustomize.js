@@ -54,19 +54,53 @@ instance.interceptors.response.use(function (response) {
     NProgress.done();
 
     return response.data ? response.data : response;
-}, function (error) {
+}, async function (error) {
     // Any status codes that falls outside the range of 2xx cause this function to trigger
     // Do something with response error
     NProgress.done();
 
     if (error.response) {
-        if (error.response.status === 401) {
-            // Handle 401 Unauthorized error
-            // Dispatch logout action
-            store.dispatch(logout());
-            toast.error('Unauthorized access. Please login!');
+        // if (error.response.status === 401) {
+        //     store.dispatch(logout());
+        //     toast.error('Unauthorized access. Please login!');
+        // }
+        // else if (error.response.status === 403) {
+        //     window.location.href = '/access-forbiden';
+        // }
+
+        const originalRequest = error.config;
+        if (error.response.status === 401 && !originalRequest._retry) {
+            originalRequest._retry = true;
+            const accessToken = store?.getState()?.auth?.account?.accessToken;
+            const refreshToken = store?.getState()?.auth?.account?.refreshToken;
+
+            if (refreshToken) {
+                try {
+                    const res = await axios.post(`${process.env.REACT_APP_API_BASE_URL}api/auth/refresh-token`, {
+                        accessToken,
+                        refreshToken
+                    })
+
+                    if (res.data.status === 0) {
+                        store.dispatch(logout());
+                        toast.error('Unauthorized access. Please login!');
+                    }
+                    else {
+                        // don't use axious instance that already configured for refresh token api call
+                        store.dispatch(setToken(res.data.data));  //set new access token
+                        originalRequest.headers.Authorization = `Bearer ${res.data.data.accessToken}`;
+
+                        return axios(originalRequest); //recall Api with new token
+                    }
+                } catch (error) {
+                    store.dispatch(logout());
+                    toast.error('Unauthorized access. Please login!');
+                    // return;
+                }
+            }
         }
-        else if (error.response.status === 403) {
+
+        if (error.response.status === 403) {
             window.location.href = '/access-forbiden';
         }
 
