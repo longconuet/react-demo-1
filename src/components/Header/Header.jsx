@@ -23,14 +23,15 @@ const Header = () => {
 
         // submit
         let res = await postLogout(authAccount?.accessToken, authAccount?.refreshToken);
-        if (res && res.status === 1) {
-            toast.success(res.message);
-            dispatch(logout(res.data));
-            navigate('/login');
+        if (res) {
+            toast.success('You are logged out!');
         }
         else {
             toast.error(res ? res.message : "Something went wrong!");
         }
+
+        dispatch(logout(res.data));
+        navigate('/login');
     }
 
     return (

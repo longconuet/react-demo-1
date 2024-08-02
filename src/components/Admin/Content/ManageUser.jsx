@@ -11,7 +11,7 @@ import { toast } from 'react-toastify';
 import PaginatedUserTable from './PaginatedUserTable';
 
 const ManageUser = () => {
-    const PAGE_LIMIT = 5;
+    const PAGE_LIMIT = 4;
 
     const [userList, setUserList] = useState([]);
     const [showCreateUserModal, setShowCreateUserModal] = useState(false);
