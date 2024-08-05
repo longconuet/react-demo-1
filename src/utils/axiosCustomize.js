@@ -24,6 +24,11 @@ instance.interceptors.request.use(function (config) {
     const accessToken = store?.getState()?.auth?.account?.accessToken;
     config.headers['Authorization'] = `Bearer ${accessToken}`;
 
+    // cancel token
+    // const source = axios.CancelToken.source();
+    // config.cancelToken = source.token;
+    // config.cancelTokenSource = source; // Thêm thuộc tính này để truy cập dễ dàng hơn
+
     return config;
 }, function (error) {
     NProgress.done();
@@ -31,21 +36,6 @@ instance.interceptors.request.use(function (config) {
     // Do something with request error
     return Promise.reject(error);
 });
-
-// let isRefreshing = false;
-// let failedQueue = [];
-
-// const processQueue = (error, token = null) => {
-//     failedQueue.forEach(prom => {
-//         if (error) {
-//             prom.reject(error);
-//         } else {
-//             prom.resolve(token);
-//         }
-//     });
-
-//     failedQueue = [];
-// };
 
 // Add a response interceptor
 instance.interceptors.response.use(function (response) {
@@ -60,14 +50,6 @@ instance.interceptors.response.use(function (response) {
     NProgress.done();
 
     if (error.response) {
-        // if (error.response.status === 401) {
-        //     store.dispatch(logout());
-        //     toast.error('Unauthorized access. Please login!');
-        // }
-        // else if (error.response.status === 403) {
-        //     window.location.href = '/access-forbiden';
-        // }
-
         const originalRequest = error.config;
         if (error.response.status === 401 && !originalRequest._retry) {
             originalRequest._retry = true;
@@ -95,7 +77,6 @@ instance.interceptors.response.use(function (response) {
                 } catch (error) {
                     store.dispatch(logout());
                     toast.error('Unauthorized access. Please login!');
-                    // return;
                 }
             }
         }
@@ -106,55 +87,6 @@ instance.interceptors.response.use(function (response) {
 
         return Promise.reject(error);
     }
-
-    // const originalRequest = error.config;
-    // if (error.response.status === 401 && !originalRequest._retry) {
-    //     if (isRefreshing) {
-    //         return new Promise((resolve, reject) => {
-    //             failedQueue.push({ resolve, reject });
-    //         })
-    //             .then(token => {
-    //                 originalRequest.headers['Authorization'] = 'Bearer ' + token;
-    //                 return instance(originalRequest);
-    //             })
-    //             .catch(err => {
-    //                 return Promise.reject(err);
-    //             });
-    //     }
-
-    //     originalRequest._retry = true;
-    //     isRefreshing = true;
-
-    //     return new Promise((resolve, reject) => {
-    //         const accessToken = store?.getState()?.auth?.account?.accessToken;
-    //         const refreshToken = store?.getState()?.auth?.account?.refreshToken;
-    //         instance.post('/auth/refresh-token', {
-    //             accessToken,
-    //             refreshToken
-    //         })
-    //             .then(({ res }) => {
-    //                 if (res.status === 0) {
-    //                     store.dispatch(logout());
-    //                     toast.error('Unauthorized access. Please login!');
-    //                 }
-    //                 else {
-    //                     store.dispatch(setToken(res.data));
-    //                     const newToken = res.data.accessToken;
-    //                     instance.defaults.headers.common['Authorization'] = 'Bearer ' + newToken;
-    //                     originalRequest.headers['Authorization'] = 'Bearer ' + newToken;
-    //                     processQueue(null, newToken);
-    //                     resolve(instance(originalRequest));
-    //                 }
-    //             })
-    //             .catch((err) => {
-    //                 processQueue(err, null);
-    //                 reject(err);
-    //             })
-    //             .finally(() => {
-    //                 isRefreshing = false;
-    //             });
-    //     });
-    // }
 
     return error && error.response && error.response.data
         ? error.response.data
